@@ -66,4 +66,42 @@ def afficher_projection_ticket_moyen(data):
     ax1.plot(df["Date"], y_ticket_moyen, marker="o", label="Historique Ticket Moyen", color='b')
     ax1.plot(future_dates, future_preds_ticket_moyen, color="orange", linestyle="--", label="Projection Ticket Moyen (90 jours)")
     ax1.set_ylabel("€ / personne", color='b')
-    ax1.tick_params(axis='y',_
+    ax1.tick_params(axis='y', labelcolor='b')
+
+    # Création d'un axe secondaire pour la fréquentation
+    ax2 = ax1.twinx()  
+    ax2.plot(df["Date"], y_participants, marker="o", label="Historique Fréquentation", color='g')
+    ax2.plot(future_dates, future_preds_participants, color="purple", linestyle="--", label="Projection Fréquentation (90 jours)")
+    ax2.set_ylabel("Participants", color='g')
+    ax2.tick_params(axis='y', labelcolor='g')
+
+    # Titre et légende
+    ax1.set_title("Projection du ticket moyen et de la fréquentation à 3 mois")
+    ax1.legend(loc="upper left")
+    ax2.legend(loc="upper right")
+
+    # Affichage du graphique
+    st.pyplot(fig)
+
+# --- Dashboard ---
+st.header("📊 Statistiques")
+if not data.empty:
+    # Conversion Date
+    data["Date"] = pd.to_datetime(data["Date"])
+    data = data.sort_values("Date")
+
+    st.subheader("📅 Détails des soirées")
+    st.dataframe(data.style.format({"Recette": "€{:.2f}", "Ticket Moyen": "€{:.2f}"}))
+
+    # 📌 Médiane globale
+    mediane_globale = median(data["Ticket Moyen"])
+    st.markdown(f"📌 **Médiane globale du ticket moyen :** **€{mediane_globale:.2f}**")
+
+    # 📈 Graphiques
+    st.subheader("📈 Visualisations")
+    plot_dashboard(data, seuil=SEUIL_RENTABILITE)  # Cette fonction prend déjà en charge l'affichage du graphique fréquentation/recette
+
+    afficher_projection_ticket_moyen(data)  # Cette fonction gère également la projection du ticket moyen et de la fréquentation
+
+else:
+    st.info("Aucune donnée pour l’instant. Ajoute ta première soirée !")
