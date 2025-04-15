@@ -99,7 +99,35 @@ if not data.empty:
 
     # 📈 Graphiques
     st.subheader("📈 Visualisations")
-    plot_dashboard(data, seuil=SEUIL_RENTABILITE)  # Cette fonction prend déjà en charge l'affichage du graphique fréquentation/recette
+
+def plot_dashboard(data, seuil):
+    # Initialisation du graphique
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+
+    # Tracer les recettes en fonction de la date
+    ax1.plot(data["Date"], data["Recette"], marker="o", label="Recette Totale (€)", color="blue", linestyle="--")
+    ax1.set_xlabel("Date")
+    ax1.set_ylabel("Recette (€)", color="blue")
+    ax1.tick_params(axis='y', labelcolor="blue")
+
+    # Créer un axe secondaire pour la fréquentation
+    ax2 = ax1.twinx()  
+    ax2.bar(data["Date"], data["Participants"], color="green", alpha=0.6, label="Fréquentation (Participants)")
+
+    # Ajuster l'échelle pour l'axe secondaire
+    max_participants = max(data["Participants"])
+    ax2.set_ylabel("Fréquentation (Participants)", color="green")
+    ax2.tick_params(axis='y', labelcolor="green")
+
+    # Titre et légende
+    ax1.set_title("Relation entre Recette Totale et Fréquentation des Soirées")
+    ax2.set_ylim(0, max_participants * 1.2)  # Ajuster l'échelle pour les barres
+    ax2.legend(loc="upper right")
+    ax1.legend(loc="upper left")
+
+    # Affichage du graphique
+    st.pyplot(fig)
+
 
     afficher_projection_ticket_moyen(data)  # Cette fonction gère également la projection du ticket moyen et de la fréquentation
 
