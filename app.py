@@ -100,7 +100,7 @@ if not data.empty:
     # 📈 Graphiques
     st.subheader("📈 Visualisations")
 
-def plot_dashboard(data, seuil):
+    plot_dashboard(data, seuil):
     # Initialisation du graphique
     fig, ax1 = plt.subplots(figsize=(10, 6))
 
