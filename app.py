@@ -45,15 +45,7 @@ if not data.empty:
     mediane_globale = median(data["Ticket Moyen"])
     st.markdown(f"📌 **Médiane globale du ticket moyen :** **€{mediane_globale:.2f}**")
 
-    # 📈 Graphiques
-    st.subheader("📈 Visualisations")
-    plot_dashboard(data, seuil=SEUIL_RENTABILITE)
-    afficher_projection_ticket_moyen(data)
-
-else:
-    st.info("Aucune donnée pour l’instant. Ajoute ta première soirée !")
-
-def afficher_projection_ticket_moyen(data):
+    def afficher_projection_ticket_moyen(data):
     st.subheader("🔮 Projection du ticket moyen (3 mois)")
 
     df = data.copy()
@@ -79,3 +71,11 @@ def afficher_projection_ticket_moyen(data):
     ax.set_ylabel("€ / personne")
     ax.legend()
     st.pyplot(fig)
+    
+    # 📈 Graphiques
+    st.subheader("📈 Visualisations")
+    plot_dashboard(data, seuil=SEUIL_RENTABILITE)
+    afficher_projection_ticket_moyen(data)
+
+else:
+    st.info("Aucune donnée pour l’instant. Ajoute ta première soirée !")
