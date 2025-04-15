@@ -50,5 +50,32 @@ if not data.empty:
     plot_dashboard(data, seuil=SEUIL_RENTABILITE)
     afficher_projection_ticket_moyen(data)
 
+def afficher_projection_ticket_moyen(data):
+    st.subheader("🔮 Projection du ticket moyen (3 mois)")
+
+    df = data.copy()
+    df = df.sort_values("Date")
+    df["Date_ordinal"] = df["Date"].map(datetime.toordinal)
+    
+    X = df[["Date_ordinal"]]
+    y = df["Ticket Moyen"]
+
+    model = LinearRegression()
+    model.fit(X, y)
+
+    # Générer les dates futures (90 jours)
+    future_dates = pd.date_range(df["Date"].max(), periods=90)
+    future_ordinals = np.array([d.toordinal() for d in future_dates]).reshape(-1, 1)
+    future_preds = model.predict(future_ordinals)
+
+    # Affichage
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.plot(df["Date"], y, marker="o", label="Historique")
+    ax.plot(future_dates, future_preds, color="orange", linestyle="--", label="Prévision (90 jours)")
+    ax.set_title("Projection du ticket moyen à 3 mois")
+    ax.set_ylabel("€ / personne")
+    ax.legend()
+    st.pyplot(fig)
+
 else:
     st.info("Aucune donnée pour l’instant. Ajoute ta première soirée !")
