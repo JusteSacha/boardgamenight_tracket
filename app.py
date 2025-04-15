@@ -3,6 +3,7 @@ from sklearn.linear_model import LinearRegression
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import datetime  # Ajout de l'importation de datetime
 from statistics import median
 from utils import load_data, save_data, calculate_ticket_moyen, plot_dashboard
 
@@ -31,21 +32,8 @@ with st.form("entry_form"):
         save_data(data)
         st.success("✅ Soirée ajoutée avec succès !")
 
-# --- Dashboard ---
-st.header("📊 Statistiques")
-if not data.empty:
-    # Conversion Date
-    data["Date"] = pd.to_datetime(data["Date"])
-    data = data.sort_values("Date")
-
-    st.subheader("📅 Détails des soirées")
-    st.dataframe(data.style.format({"Recette": "€{:.2f}", "Ticket Moyen": "€{:.2f}"}))
-
-    # 📌 Médiane globale
-    mediane_globale = median(data["Ticket Moyen"])
-    st.markdown(f"📌 **Médiane globale du ticket moyen :** **€{mediane_globale:.2f}**")
-
-    def afficher_projection_ticket_moyen(data):
+# --- Définition de la fonction de projection ---
+def afficher_projection_ticket_moyen(data):
     st.subheader("🔮 Projection du ticket moyen (3 mois)")
 
     df = data.copy()
@@ -71,7 +59,21 @@ if not data.empty:
     ax.set_ylabel("€ / personne")
     ax.legend()
     st.pyplot(fig)
-    
+
+# --- Dashboard ---
+st.header("📊 Statistiques")
+if not data.empty:
+    # Conversion Date
+    data["Date"] = pd.to_datetime(data["Date"])
+    data = data.sort_values("Date")
+
+    st.subheader("📅 Détails des soirées")
+    st.dataframe(data.style.format({"Recette": "€{:.2f}", "Ticket Moyen": "€{:.2f}"}))
+
+    # 📌 Médiane globale
+    mediane_globale = median(data["Ticket Moyen"])
+    st.markdown(f"📌 **Médiane globale du ticket moyen :** **€{mediane_globale:.2f}**")
+
     # 📈 Graphiques
     st.subheader("📈 Visualisations")
     plot_dashboard(data, seuil=SEUIL_RENTABILITE)
