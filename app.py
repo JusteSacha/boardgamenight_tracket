@@ -50,6 +50,9 @@ if not data.empty:
     plot_dashboard(data, seuil=SEUIL_RENTABILITE)
     afficher_projection_ticket_moyen(data)
 
+else:
+    st.info("Aucune donnée pour l’instant. Ajoute ta première soirée !")
+
 def afficher_projection_ticket_moyen(data):
     st.subheader("🔮 Projection du ticket moyen (3 mois)")
 
@@ -76,6 +79,3 @@ def afficher_projection_ticket_moyen(data):
     ax.set_ylabel("€ / personne")
     ax.legend()
     st.pyplot(fig)
-
-else:
-    st.info("Aucune donnée pour l’instant. Ajoute ta première soirée !")
