@@ -32,12 +32,10 @@ with st.form("entry_form"):
 # --- Dashboard ---
 st.header("📊 Statistiques")
 if not data.empty:
-    # Conversion et tri
+    # Conversion Date
     data["Date"] = pd.to_datetime(data["Date"])
     data = data.sort_values("Date")
-    data["Semaine"] = data["Date"].dt.to_period("W").astype(str)
 
-    # Tableau principal
     st.subheader("📅 Détails des soirées")
     st.dataframe(data.style.format({"Recette": "€{:.2f}", "Ticket Moyen": "€{:.2f}"}))
 
@@ -45,14 +43,8 @@ if not data.empty:
     mediane_globale = median(data["Ticket Moyen"])
     st.markdown(f"📌 **Médiane globale du ticket moyen :** **€{mediane_globale:.2f}**")
 
-    # 📊 Médiane hebdomadaire
-    st.subheader("📈 Médiane du ticket moyen par semaine")
-    mediane_par_semaine = data.groupby("Semaine")["Ticket Moyen"].median().reset_index()
-    mediane_par_semaine.columns = ["Semaine", "Médiane (€)"]
-    st.dataframe(mediane_par_semaine)
-
-    # 📉 Graphiques
-    st.subheader("📊 Visualisations")
+    # 📈 Graphiques
+    st.subheader("📈 Visualisations")
     plot_dashboard(data, seuil=SEUIL_RENTABILITE)
 
 else:
