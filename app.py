@@ -33,31 +33,54 @@ with st.form("entry_form"):
 
 # --- Définition de la fonction de projection ---
 def afficher_projection_ticket_moyen(data):
-    st.subheader("🔮 Projection du ticket moyen (3 mois)")
+    st.subheader("🔮 Projection du ticket moyen et de la fréquentation (3 mois)")
 
+    # Préparer les données
     df = data.copy()
     df = df.sort_values("Date")
-    # Transformation de la date en datetime pour utiliser toordinal
     df["Date_ordinal"] = df["Date"].apply(lambda x: x.toordinal())
     
     X = df[["Date_ordinal"]]
-    y = df["Ticket Moyen"]
+    y_ticket_moyen = df["Ticket Moyen"]
+    y_participants = df["Participants"]
 
-    model = LinearRegression()
-    model.fit(X, y)
+    # Modèles de régression pour ticket moyen et fréquentation
+    model_ticket_moyen = LinearRegression()
+    model_ticket_moyen.fit(X, y_ticket_moyen)
+
+    model_participants = LinearRegression()
+    model_participants.fit(X, y_participants)
 
     # Générer les dates futures (90 jours)
     future_dates = pd.date_range(df["Date"].max(), periods=90)
     future_ordinals = np.array([d.toordinal() for d in future_dates]).reshape(-1, 1)
-    future_preds = model.predict(future_ordinals)
+
+    # Prédictions pour ticket moyen et fréquentation
+    future_preds_ticket_moyen = model_ticket_moyen.predict(future_ordinals)
+    future_preds_participants = model_participants.predict(future_ordinals)
 
     # Affichage
-    fig, ax = plt.subplots(figsize=(10, 4))
-    ax.plot(df["Date"], y, marker="o", label="Historique")
-    ax.plot(future_dates, future_preds, color="orange", linestyle="--", label="Prévision (90 jours)")
-    ax.set_title("Projection du ticket moyen à 3 mois")
-    ax.set_ylabel("€ / personne")
-    ax.legend()
+    fig, ax1 = plt.subplots(figsize=(10, 4))
+
+    # Affichage de la projection du ticket moyen
+    ax1.plot(df["Date"], y_ticket_moyen, marker="o", label="Historique Ticket Moyen", color='b')
+    ax1.plot(future_dates, future_preds_ticket_moyen, color="orange", linestyle="--", label="Projection Ticket Moyen (90 jours)")
+    ax1.set_ylabel("€ / personne", color='b')
+    ax1.tick_params(axis='y', labelcolor='b')
+
+    # Création d'un axe secondaire pour la fréquentation
+    ax2 = ax1.twinx()  
+    ax2.plot(df["Date"], y_participants, marker="o", label="Historique Fréquentation", color='g')
+    ax2.plot(future_dates, future_preds_participants, color="purple", linestyle="--", label="Projection Fréquentation (90 jours)")
+    ax2.set_ylabel("Participants", color='g')
+    ax2.tick_params(axis='y', labelcolor='g')
+
+    # Titre et légende
+    ax1.set_title("Projection du ticket moyen et de la fréquentation à 3 mois")
+    ax1.legend(loc="upper left")
+    ax2.legend(loc="upper right")
+
+    # Affichage du graphique
     st.pyplot(fig)
 
 # --- Dashboard ---
