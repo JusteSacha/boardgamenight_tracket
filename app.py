@@ -8,7 +8,7 @@ from utils import load_data, save_data, calculate_ticket_moyen, plot_dashboard
 
 # --- Configuration de la page ---
 st.set_page_config(page_title="BoardGame Profit Tracker", layout="centered")
-st.title("🎲 Tableau de bord - Rentabilité Soirées Jeux")
+st.title("🎲 Tracker des soirées jeux")
 
 # --- Paramètres ---
 SEUIL_RENTABILITE = st.sidebar.number_input("💰 Seuil de rentabilité (€ / personne)", min_value=0.0, value=10.0, step=0.5)
